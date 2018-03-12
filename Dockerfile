@@ -11,4 +11,4 @@ RUN npm install --production
 
 CMD ["npm","start"]
 
-EXPOSE 8888
+EXPOSE 8080

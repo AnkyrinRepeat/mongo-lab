@@ -1,18 +1,35 @@
 version: '2'
 services:
   mongo:
-    image: mongo:3.4
-  web:
-    build: .
+    image: mongo
     ports:
-     - "3000:3000"
+      - "27017:27017"
+  mongo-gui:
+    image: mongo-express
     environment:
-     - MONGODB_URI=mongodb://mongo:27017/test 
+      - "ME_CONFIG_MONGODB_SERVER=mongo"
+      - "ME_CONFIG_MONGODB_PORT=27017"
+    ports:
+      - "8081:8081"
     links:
-     - mongo 
-    depends_on: 
-     - mongo 
+      - mongo
+    depends_on:
+      - mongo
+  web:
+    image: ankyrinrepeat/foobar
+    ports:
+     - "8080:8080"
+    environment:
+     - MONGODB_URI=mongodb://mongo:27017/user
+     - MONGOLAB_URI=mongodb://mongo:27017/user
+     - MONGO_GUI_URI=mongo-gui
+     - MONGO_SANDBOX_URI=mongodb://mongo:27017/sandbox
+    links:
+     - mongo
+     - mongo-gui
+    depends_on:
+     - mongo
+     - mongo-gui
     volumes:
      - .:/starter
      - /starter/node_modules
-     

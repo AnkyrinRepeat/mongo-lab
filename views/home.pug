@@ -1,27 +1,32 @@
 extends layout
 
 block content
-  h1 Hackathon Starter
-  p.lead A boilerplate for Node.js web applications.
+  h1 MongoDB Sandbox
+  p.lead A sandbox environment for testing MongoDB.
   hr
   .row
+    form(role='form', enctype='multipart/form-data', method='POST' action='/home/upload')
+      input(type='hidden', name='_csrf', value=_csrf)
+      .col-sm-6
+        h2 Collection Name
+        p MongoDB stores data in collections. Collections are similar to tables in relational databases like MySQL.
+        div.form-group
+          label(for='name') Name:
+          input#name.form-control(type='text', placeholder='Collection Name' name='name' required)
+      .col-sm-6
+        h2 Upload File
+        p Upload CSV files to your MongoDB table.
+          .form-group
+            label.control-label File Input
+            input(type='file', name='myFiles' accept=".csv" multiple)
+          button.btn.btn-primary(type='submit') Submit
     .col-sm-6
-      h2 Heading
-      p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      h2 Launch MongoDB GUI
+      p Launch a MongoDB GUI
       p
-        a.btn.btn-default(href='#', role='button') View details »
+        a.btn.btn-default(href=process.env.MONGO_GUI_URI || '#', role='button') Launch MongoDB GUI
     .col-sm-6
-      h2 Heading
-      p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      h2 OpenShift Terminal
+      p Launch the openshift terminal to access your MongoDB 
       p
-        a.btn.btn-default(href='#', role='button') View details »
-    .col-sm-6
-      h2 Heading
-      p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-      p
-        a.btn.btn-default(href='#', role='button') View details »
-    .col-sm-6
-      h2 Heading
-      p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-      p
-        a.btn.btn-default(href='#', role='button') View details »
+        a.btn.btn-default(href=process.env.OPENSHIFT_TERMINAL_URI || '#', role='button') Launch OC Terminal
