@@ -5,7 +5,7 @@ services:
     ports:
       - "27017:27017"
   mongo-gui:
-    image: mongo-express
+    image: ankyrinrepeat/mongo-express
     environment:
       - "ME_CONFIG_MONGODB_SERVER=mongo"
       - "ME_CONFIG_MONGODB_PORT=27017"
@@ -22,7 +22,7 @@ services:
     environment:
      - MONGODB_URI=mongodb://mongo:27017/user
      - MONGOLAB_URI=mongodb://mongo:27017/user
-     - MONGO_GUI_URI=mongo-gui
+     - MONGO_GUI_URI=http://localhost:8081/db/sandbox
      - MONGO_SANDBOX_URI=mongodb://mongo:27017/sandbox
     links:
      - mongo
