@@ -75,9 +75,6 @@ exports.postFileUpload = (req, res) => {
       })
   })
 
-  req.flash('success', { msg: 'File was uploaded successfully.' });
-  res.locals.messages = req.flash();
-  res.render('home', {
-    title: 'Home'
-  });
+  req.flash('success', { msg: 'Files were uploaded successfully.' });
+  res.redirect('/');
 };

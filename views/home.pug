@@ -19,7 +19,14 @@ block content
           .form-group
             label.control-label File Input
             input(type='file', name='myFiles' accept=".csv" multiple)
-          button.btn.btn-primary(type='submit') Submit
+          // Waiting cursor
+          script.
+            var waiting = function() {
+              $("body").css("cursor", "progress");
+            }
+          button.btn.btn-primary(type='submit' onclick='waiting()') Submit
+          
+            
     .col-sm-6
       h2 Launch MongoDB GUI
       p Launch a MongoDB GUI

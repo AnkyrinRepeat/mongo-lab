@@ -7,6 +7,7 @@ services:
   mongo-gui:
     image: ankyrinrepeat/mongo-express
     environment:
+      - "ME_CONFIG_BASICAUTH_USERNAME="
       - "ME_CONFIG_MONGODB_SERVER=mongo"
       - "ME_CONFIG_MONGODB_PORT=27017"
     ports:
@@ -16,7 +17,7 @@ services:
     depends_on:
       - mongo
   web:
-    image: ankyrinrepeat/foobar
+    build: .
     ports:
      - "8080:8080"
     environment:
