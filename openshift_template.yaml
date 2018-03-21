@@ -1,0 +1,766 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: mongodb_template
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/image.dockerRepositoryCheck: 2018-03-20T19:22:41Z
+    creationTimestamp: null
+    generation: 2
+    labels:
+      app: mongo
+    name: mongo
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/image.dockerRepositoryCheck: 2018-03-20T19:22:41Z
+    creationTimestamp: null
+    generation: 2
+    labels:
+      app: mongo-express
+    name: mongo-express
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/image.dockerRepositoryCheck: 2018-03-20T19:22:41Z
+    creationTimestamp: null
+    generation: 2
+    labels:
+      app: mongo-lab
+    name: mongo-lab
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/image.dockerRepositoryCheck: 2018-03-20T19:22:42Z
+    creationTimestamp: null
+    generation: 2
+    labels:
+      app: oc-web-terminal
+    name: oc-web-terminal
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: mongo
+    name: mongo
+  spec:
+    replicas: 1
+    selector:
+      app: mongo
+      deploymentconfig: mongo
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: mongo
+          deploymentconfig: mongo
+      spec:
+        containers:
+        - image: mongo@sha256:fd85473bdcfad727d1d8d755a4879b7c7427a7fc84f50c92ab87508653469c6d
+          imagePullPolicy: Always
+          name: mongo
+          ports:
+          - containerPort: 27017
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /data/configdb
+            name: mongo-1
+          - mountPath: /data/db
+            name: mongo-2
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: mongo-1
+        - emptyDir: {}
+          name: mongo-2
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mongo
+        from:
+          kind: ImageStreamTag
+          name: mongo:latest
+          namespace: mongodb-lab-namespace
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: mongo-express
+    name: mongo-express
+  spec:
+    replicas: 1
+    selector:
+      app: mongo-express
+      deploymentconfig: mongo-express
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: mongo-express
+          deploymentconfig: mongo-express
+      spec:
+        containers:
+        - image: mongo-express@sha256:dd2e9d0a48fa037565112bfe79623784c95ae220510f765d10c711137a1d80ae
+          imagePullPolicy: Always
+          name: mongo-express
+          ports:
+          - containerPort: 8081
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mongo-express
+        from:
+          kind: ImageStreamTag
+          name: mongo-express:latest
+          namespace: mongodb-lab-namespace
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: mongo-lab
+    name: mongo-lab
+  spec:
+    replicas: 1
+    selector:
+      app: mongo-lab
+      deploymentconfig: mongo-lab
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: mongo-lab
+          deploymentconfig: mongo-lab
+      spec:
+        containers:
+        - env:
+          - name: MONGO_GUI_URI
+            value: http://mongo-express-mongodb-lab-namespace.app.caascloud.net
+          - name: OPENSHIFT_TERMINAL_URI
+            value: http://oc-web-terminal-mongodb-lab-namespace.app.caascloud.net
+          image: ankyrinrepeat/mongo-lab@sha256:08f9ae0b3feb86dbbc415dfdcde20ffbe7ed1ff47f27f8be89021f0a85a982d7
+          imagePullPolicy: Always
+          name: mongo-lab
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - mongo-lab
+        from:
+          kind: ImageStreamTag
+          name: mongo-lab:latest
+          namespace: mongodb-lab-namespace
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: oc-web-terminal
+    name: oc-web-terminal
+  spec:
+    replicas: 1
+    selector:
+      app: oc-web-terminal
+      deploymentconfig: oc-web-terminal
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: oc-web-terminal
+          deploymentconfig: oc-web-terminal
+      spec:
+        containers:
+        - image: geordgez/oc-web-terminal@sha256:0b5486a9f4fc49e79c98cf15c35424f6ff460b02a5ba05fd0f5c6ec4cbfa4725
+          imagePullPolicy: IfNotPresent
+          name: oc-web-terminal
+          ports:
+          - containerPort: 7681
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - oc-web-terminal
+        from:
+          kind: ImageStreamTag
+          name: oc-web-terminal:kubeconfig-temp
+          namespace: mongodb-lab-namespace
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    latestVersion: 0
+    observedGeneration: 0
+    replicas: 0
+    unavailableReplicas: 0
+    updatedReplicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.name: mongo-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mongo
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: image change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"mongo","namespace":"mongodb-lab-namespace","selfLink":"/oapi/v1/namespaces/mongodb-lab-namespace/deploymentconfigs/mongo","uid":"3d089680-2c70-11e8-9c9d-000d3a717024","resourceVersion":"81217409","generation":2,"creationTimestamp":"2018-03-20T18:55:20Z","labels":{"app":"mongo"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ConfigChange"},{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["mongo"],"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"mongo:latest"},"lastTriggeredImage":"mongo@sha256:fd85473bdcfad727d1d8d755a4879b7c7427a7fc84f50c92ab87508653469c6d"}}],"replicas":1,"test":false,"selector":{"app":"mongo","deploymentconfig":"mongo"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"mongo","deploymentconfig":"mongo"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"volumes":[{"name":"mongo-1","emptyDir":{}},{"name":"mongo-2","emptyDir":{}}],"containers":[{"name":"mongo","image":"mongo@sha256:fd85473bdcfad727d1d8d755a4879b7c7427a7fc84f50c92ab87508653469c6d","ports":[{"containerPort":27017,"protocol":"TCP"}],"resources":{},"volumeMounts":[{"name":"mongo-1","mountPath":"/data/configdb"},{"name":"mongo-2","mountPath":"/data/db"}],"terminationMessagePath":"/dev/termination-log","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{}}}},"status":{"latestVersion":1,"observedGeneration":1,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"image change","causes":[{"type":"ImageChange","imageTrigger":{"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"mongo:latest"}}}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2018-03-20T18:55:20Z","lastTransitionTime":"2018-03-20T18:55:20Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: mongo
+      openshift.io/deployment-config.name: mongo
+    name: mongo-1
+  spec:
+    replicas: 1
+    selector:
+      app: mongo
+      deployment: mongo-1
+      deploymentconfig: mongo
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: mongo
+          openshift.io/deployment.name: mongo-1
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: mongo
+          deployment: mongo-1
+          deploymentconfig: mongo
+      spec:
+        containers:
+        - image: mongo@sha256:fd85473bdcfad727d1d8d755a4879b7c7427a7fc84f50c92ab87508653469c6d
+          imagePullPolicy: Always
+          name: mongo
+          ports:
+          - containerPort: 27017
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /data/configdb
+            name: mongo-1
+          - mountPath: /data/db
+            name: mongo-2
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: mongo-1
+        - emptyDir: {}
+          name: mongo-2
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.name: mongo-express-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mongo-express
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: image change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"mongo-express","namespace":"mongodb-lab-namespace","selfLink":"/oapi/v1/namespaces/mongodb-lab-namespace/deploymentconfigs/mongo-express","uid":"47f2cc58-2c70-11e8-9c9d-000d3a717024","resourceVersion":"81217547","generation":2,"creationTimestamp":"2018-03-20T18:55:38Z","labels":{"app":"mongo-express"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ConfigChange"},{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["mongo-express"],"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"mongo-express:latest"},"lastTriggeredImage":"mongo-express@sha256:dd2e9d0a48fa037565112bfe79623784c95ae220510f765d10c711137a1d80ae"}}],"replicas":1,"test":false,"selector":{"app":"mongo-express","deploymentconfig":"mongo-express"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"mongo-express","deploymentconfig":"mongo-express"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"containers":[{"name":"mongo-express","image":"mongo-express@sha256:dd2e9d0a48fa037565112bfe79623784c95ae220510f765d10c711137a1d80ae","ports":[{"containerPort":8081,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{}}}},"status":{"latestVersion":1,"observedGeneration":1,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"image change","causes":[{"type":"ImageChange","imageTrigger":{"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"mongo-express:latest"}}}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2018-03-20T18:55:38Z","lastTransitionTime":"2018-03-20T18:55:38Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: mongo-express
+      openshift.io/deployment-config.name: mongo-express
+    name: mongo-express-1
+  spec:
+    replicas: 1
+    selector:
+      app: mongo-express
+      deployment: mongo-express-1
+      deploymentconfig: mongo-express
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: mongo-express
+          openshift.io/deployment.name: mongo-express-1
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: mongo-express
+          deployment: mongo-express-1
+          deploymentconfig: mongo-express
+      spec:
+        containers:
+        - image: mongo-express@sha256:dd2e9d0a48fa037565112bfe79623784c95ae220510f765d10c711137a1d80ae
+          imagePullPolicy: Always
+          name: mongo-express
+          ports:
+          - containerPort: 8081
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.name: mongo-lab-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: mongo-lab
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: image change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"mongo-lab","namespace":"mongodb-lab-namespace","selfLink":"/oapi/v1/namespaces/mongodb-lab-namespace/deploymentconfigs/mongo-lab","uid":"ade6b14e-2c70-11e8-9c9d-000d3a717024","resourceVersion":"81218679","generation":2,"creationTimestamp":"2018-03-20T18:58:30Z","labels":{"app":"mongo-lab"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ConfigChange"},{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["mongo-lab"],"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"mongo-lab:latest"},"lastTriggeredImage":"ankyrinrepeat/mongo-lab@sha256:08f9ae0b3feb86dbbc415dfdcde20ffbe7ed1ff47f27f8be89021f0a85a982d7"}}],"replicas":1,"test":false,"selector":{"app":"mongo-lab","deploymentconfig":"mongo-lab"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"mongo-lab","deploymentconfig":"mongo-lab"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"containers":[{"name":"mongo-lab","image":"ankyrinrepeat/mongo-lab@sha256:08f9ae0b3feb86dbbc415dfdcde20ffbe7ed1ff47f27f8be89021f0a85a982d7","ports":[{"containerPort":8080,"protocol":"TCP"}],"env":[{"name":"MONGO_GUI_URI","value":"http://mongo-express-mongodb-lab-namespace.app.caascloud.net"},{"name":"OPENSHIFT_TERMINAL_URI","value":"http://oc-web-terminal-mongodb-lab-namespace.app.caascloud.net"}],"resources":{},"terminationMessagePath":"/dev/termination-log","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{}}}},"status":{"latestVersion":1,"observedGeneration":1,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"image change","causes":[{"type":"ImageChange","imageTrigger":{"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"mongo-lab:latest"}}}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2018-03-20T18:58:30Z","lastTransitionTime":"2018-03-20T18:58:30Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: mongo-lab
+      openshift.io/deployment-config.name: mongo-lab
+    name: mongo-lab-1
+  spec:
+    replicas: 1
+    selector:
+      app: mongo-lab
+      deployment: mongo-lab-1
+      deploymentconfig: mongo-lab
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: mongo-lab
+          openshift.io/deployment.name: mongo-lab-1
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: mongo-lab
+          deployment: mongo-lab-1
+          deploymentconfig: mongo-lab
+      spec:
+        containers:
+        - env:
+          - name: MONGO_GUI_URI
+            value: http://mongo-express-mongodb-lab-namespace.app.caascloud.net
+          - name: OPENSHIFT_TERMINAL_URI
+            value: http://oc-web-terminal-mongodb-lab-namespace.app.caascloud.net
+          image: ankyrinrepeat/mongo-lab@sha256:08f9ae0b3feb86dbbc415dfdcde20ffbe7ed1ff47f27f8be89021f0a85a982d7
+          imagePullPolicy: Always
+          name: mongo-lab
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    annotations:
+      openshift.io/deployer-pod.name: oc-web-terminal-1-deploy
+      openshift.io/deployment-config.latest-version: "1"
+      openshift.io/deployment-config.name: oc-web-terminal
+      openshift.io/deployment.phase: Complete
+      openshift.io/deployment.replicas: "1"
+      openshift.io/deployment.status-reason: image change
+      openshift.io/encoded-deployment-config: |
+        {"kind":"DeploymentConfig","apiVersion":"v1","metadata":{"name":"oc-web-terminal","namespace":"mongodb-lab-namespace","selfLink":"/oapi/v1/namespaces/mongodb-lab-namespace/deploymentconfigs/oc-web-terminal","uid":"8fe7edbe-2c70-11e8-9c9d-000d3a717024","resourceVersion":"81218333","generation":2,"creationTimestamp":"2018-03-20T18:57:39Z","labels":{"app":"oc-web-terminal"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"strategy":{"type":"Rolling","rollingParams":{"updatePeriodSeconds":1,"intervalSeconds":1,"timeoutSeconds":600,"maxUnavailable":"25%","maxSurge":"25%"},"resources":{},"activeDeadlineSeconds":21600},"triggers":[{"type":"ConfigChange"},{"type":"ImageChange","imageChangeParams":{"automatic":true,"containerNames":["oc-web-terminal"],"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"oc-web-terminal:kubeconfig-temp"},"lastTriggeredImage":"geordgez/oc-web-terminal@sha256:0b5486a9f4fc49e79c98cf15c35424f6ff460b02a5ba05fd0f5c6ec4cbfa4725"}}],"replicas":1,"test":false,"selector":{"app":"oc-web-terminal","deploymentconfig":"oc-web-terminal"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"oc-web-terminal","deploymentconfig":"oc-web-terminal"},"annotations":{"openshift.io/generated-by":"OpenShiftWebConsole"}},"spec":{"containers":[{"name":"oc-web-terminal","image":"geordgez/oc-web-terminal@sha256:0b5486a9f4fc49e79c98cf15c35424f6ff460b02a5ba05fd0f5c6ec4cbfa4725","ports":[{"containerPort":7681,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","imagePullPolicy":"IfNotPresent"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{}}}},"status":{"latestVersion":1,"observedGeneration":1,"replicas":0,"updatedReplicas":0,"availableReplicas":0,"unavailableReplicas":0,"details":{"message":"image change","causes":[{"type":"ImageChange","imageTrigger":{"from":{"kind":"ImageStreamTag","namespace":"mongodb-lab-namespace","name":"oc-web-terminal:kubeconfig-temp"}}}]},"conditions":[{"type":"Available","status":"False","lastUpdateTime":"2018-03-20T18:57:39Z","lastTransitionTime":"2018-03-20T18:57:39Z","message":"Deployment config does not have minimum availability."}]}}
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: oc-web-terminal
+      openshift.io/deployment-config.name: oc-web-terminal
+    name: oc-web-terminal-1
+  spec:
+    replicas: 1
+    selector:
+      app: oc-web-terminal
+      deployment: oc-web-terminal-1
+      deploymentconfig: oc-web-terminal
+    template:
+      metadata:
+        annotations:
+          openshift.io/deployment-config.latest-version: "1"
+          openshift.io/deployment-config.name: oc-web-terminal
+          openshift.io/deployment.name: oc-web-terminal-1
+          openshift.io/generated-by: OpenShiftWebConsole
+        creationTimestamp: null
+        labels:
+          app: oc-web-terminal
+          deployment: oc-web-terminal-1
+          deploymentconfig: oc-web-terminal
+      spec:
+        containers:
+        - image: geordgez/oc-web-terminal@sha256:0b5486a9f4fc49e79c98cf15c35424f6ff460b02a5ba05fd0f5c6ec4cbfa4725
+          imagePullPolicy: IfNotPresent
+          name: oc-web-terminal
+          ports:
+          - containerPort: 7681
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    replicas: 0
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    name: mongo-express
+  spec:
+    host: mongo-express-mongodb-lab-namespace.app.caascloud.net
+    port:
+      targetPort: 8081-tcp
+    to:
+      kind: Service
+      name: mongo-express
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-03-20T19:22:42Z
+        status: "True"
+        type: Admitted
+      host: mongo-express-mongodb-lab-namespace.app.caascloud.net
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    name: mongo-lab
+  spec:
+    host: mongo-lab-mongodb-lab-namespace.app.caascloud.net
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: mongo-lab
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-03-20T19:22:43Z
+        status: "True"
+        type: Admitted
+      host: mongo-lab-mongodb-lab-namespace.app.caascloud.net
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    name: oc-web-terminal
+  spec:
+    host: oc-web-terminal-mongodb-lab-namespace.app.caascloud.net
+    port:
+      targetPort: 7681-tcp
+    to:
+      kind: Service
+      name: oc-web-terminal
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-03-20T19:22:43Z
+        status: "True"
+        type: Admitted
+      host: oc-web-terminal-mongodb-lab-namespace.app.caascloud.net
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: null
+    name: oc-web-terminal-full-2
+  spec:
+    host: oc-web-terminal-full-2-mongodb-lab-namespace.app.caascloud.net
+    port:
+      targetPort: 7681-tcp
+    to:
+      kind: Service
+      name: oc-web-terminal-full-2
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2018-03-21T14:52:49Z
+        status: "True"
+        type: Admitted
+      host: oc-web-terminal-full-2-mongodb-lab-namespace.app.caascloud.net
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: mongo
+    name: mongo
+  spec:
+    ports:
+    - name: 27017-tcp
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      deploymentconfig: mongo
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: mongo-express
+    name: mongo-express
+  spec:
+    ports:
+    - name: 8081-tcp
+      port: 8081
+      protocol: TCP
+      targetPort: 8081
+    selector:
+      deploymentconfig: mongo-express
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+      service.alpha.openshift.io/dependencies: '[{"name":"mongo","namespace":"","kind":"Service"},{"name":"mongo-express","namespace":"","kind":"Service"},{"name":"oc-web-terminal","namespace":"","kind":"Service"},{"name":"oc-web-terminal-full-2","namespace":"","kind":"Service"}]'
+    creationTimestamp: null
+    labels:
+      app: mongo-lab
+    name: mongo-lab
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: mongo-lab
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: oc-web-terminal
+    name: oc-web-terminal
+  spec:
+    ports:
+    - name: 7681-tcp
+      port: 80
+      protocol: TCP
+      targetPort: 7681
+    selector:
+      deploymentconfig: oc-web-terminal
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftWebConsole
+    creationTimestamp: null
+    labels:
+      app: oc-web-terminal-full-2
+    name: oc-web-terminal-full-2
+  spec:
+    ports:
+    - name: 7681-tcp
+      port: 443
+      protocol: TCP
+      targetPort: 7681
+    selector:
+      deploymentconfig: oc-web-terminal-full-2
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}

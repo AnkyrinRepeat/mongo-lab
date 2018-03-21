@@ -28,12 +28,27 @@ block content
           
             
     .col-sm-6
-      h2 Launch MongoDB GUI
-      p Launch a MongoDB GUI
+      h2 MongoDB GUI
+      p Launch a MongoDB GUI to view the collections you have added to your database. 
       p
         a.btn.btn-default(href=process.env.MONGO_GUI_URI || '#', role='button') Launch MongoDB GUI
     .col-sm-6
       h2 OpenShift Terminal
-      p Launch the openshift terminal to access your MongoDB 
+      p Launch the openshift terminal to access your MongoDB
       p
         a.btn.btn-default(href=process.env.OPENSHIFT_TERMINAL_URI || '#', role='button') Launch OC Terminal
+      p 
+        |
+        span.bg-secondary.padded oc login -u [GitLab Username] -p [GitLab Password]
+        | to log into your OpenShift Account
+      p
+        span.bg-secondary.padded oc project [Project Name]
+        | to select which OpenShift project to access
+      p 
+      span.bg-secondary.padded oc rsh [mongo-pod]
+      | will start a remote shell interface with your MongoDB instance. To find your pod use 
+      |
+      span.bg-secondary.padded oc get pods  
+      p
+        span.bg-secondary.padded mongo
+        | will start a MongoDB Shell session  
