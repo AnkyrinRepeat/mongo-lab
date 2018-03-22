@@ -39,7 +39,7 @@ block content
         a.btn.btn-default(href=process.env.OPENSHIFT_TERMINAL_URI || '#', role='button') Launch OC Terminal
       p 
         |
-        span.bg-secondary.padded oc login -u [GitLab Username] -p [GitLab Password]
+        span.bg-secondary.padded oc login openshift.caascloud.net:8443
         | to log into your OpenShift Account
       p
         span.bg-secondary.padded oc project [Project Name]
